@@ -1,0 +1,121 @@
+//======================bootstrap====================================================
+// Core variables and mixins
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/variables";
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+// Reset and dependencies
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/normalize";
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities";
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/scaffolding";
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/utilities";
+//======================bootstrap====================================================
+@import "animate";
+a,
+button,
+input,
+textarea {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); //去掉IOS上点击按钮，链接等元素时出现的半透明区域
+    -webkit-user-modify: read-write-plaintext-only; //去掉Android上点击按钮，链接等元素时出现的半透明区域
+}
+
+img {
+    -webkit-touch-callout: none;
+}
+
+html.full-screen {
+    height: 100%;
+    body,
+    .stage {
+        height: 100%;
+    }
+}
+
+.iphone {
+    &.iphone-6 {
+        width: 434px;
+        height: 882px;
+        background: url(../images/ip6.png) no-repeat left top;
+        background-size: 100% 100%;
+        padding: 109px 28px 106px 31px;
+        @media (max-width: 375px) {
+            width: 100%;
+            height: 100%;
+            background: none;
+            padding: 0;
+        }
+        @media (min-width: 634px) {
+            float: left;
+        }
+        .status-bar {
+          line-height: 20px;
+          background: #191919;
+          text-align: center;
+          color: #fff;
+          font-size: 12px;
+        }
+        .title-bar {
+          line-height: 44px;
+          background: #191919;
+          text-align: center;
+          color: #fff;
+        }
+        .stage {
+          height: calc(100% - 64px);
+        }
+
+    }
+}
+
+.game-info {
+    float: left;
+    text-align: center;
+    margin-left: 20px;
+    @media (max-width: 414px) {
+        display: none;
+    }
+}
+
+
+
+//舞台
+.stage {
+    position: relative;
+    max-width: 414px;
+    max-height: 736px;
+    margin: 0 auto;
+    background: #ce5343 url(../images/p01.png) no-repeat center top;
+    background-size: 100%;
+    overflow: hidden;
+    //场景
+    .scenes {
+        position: relative;
+        //标题页面场景
+        &.scenes-title {
+            height: 100%;
+            .game-name {
+                display: block;
+                margin: 0 auto;
+            }
+            .earth {
+              position: absolute;
+              bottom: -800px;
+              left: 50%;
+              transform: translate3d(-50%, 0, 0);
+              width: 1000px;
+              height: 1000px;
+              border-radius: 1000px;
+              border: 8px solid #ffdc7b;
+              background: #ffffff;
+              padding: 12px;
+              animation: earth-rotation 45s linear infinite;
+              &:after {
+                content: '';
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 5px dashed #c9c9c9;
+              }
+            }
+        }
+    }
+}

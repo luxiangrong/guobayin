@@ -1,0 +1,8 @@
+@keyframes earth-rotation {
+  0% {
+    transform: translate3d(-50%, 0, 0) rotateZ(0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0) rotateZ(360deg);
+  }
+}
