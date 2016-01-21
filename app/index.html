@@ -18,44 +18,32 @@
 </head>
 
 <body>
-    <div class="iphone iphone-6">
-        <div class="status-bar clearfix">
-            <div class="pull-left">
-                <span class="single">
-                    <i class="dot solid"></i><i class="dot solid"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i>
-                </span>
-                <span class="operators">中国移动</span>
+    <div id="stage" class="stage">
+        <div class="scenes scenes-title">
+            <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
+            <div class="earth">
             </div>
-            <div class="center">17:57</div>
-        </div>
-        <div class="title-bar">
-            <div class="pull-left l-action">
-                <i class="iconfont">&#xe603;</i>返回
+            <div class="city"></div>
+            <div class="heartbeat">
+                <div class="mask"></div>
             </div>
-            <div class="center">过把瘾</div>
-        </div>
-        <div id="stage" class="stage" style="border: 1px solid black">
-            <div class="scenes scenes-title">
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
-                <div class="earth"></div>
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
-                <img src="images/p02.png" srcset="images/p02@2x.png 2x" class="game-name">
+            <a href="" class="btn btn-start"><img src="images/p05@2x.png" srcset="images/p05@2x.png 2x" height="41" width="100"  alt=""></a>
+            <div class="logo-wrap">
+                <img src="images/p06.png" srcset="images/p06@2x.png 2x" alt="">
             </div>
+            <img src="images/p07.png" class="coin coin-1" alt="">
+            <img src="images/p08.png" class="coin coin-2" alt="">
+            <img src="images/p07.png" class="coin coin-3" alt="">
+            <img src="images/p08.png" class="coin coin-4" alt="">
+            <img src="images/p09.png" class="man shake" alt="">
         </div>
-    </div>
-    <div class="game-info">
-        <h1>让股民过把瘾</h1>
-        <p>
-            让股民过把瘾,让股民过把瘾,让股民过把瘾,让股民过把瘾
-        </p>
     </div>
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/fastclick/lib/fastclick.js"></script>
+    <script src="/bower_components/velocity/velocity.js"></script>
+    <script src="/bower_components/velocity/velocity.ui.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js scripts/main.js -->
