@@ -5,18 +5,44 @@
 // Reset and dependencies
 @import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/normalize";
 @import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities";
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/buttons";
 @import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/scaffolding";
 @import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap/utilities";
 //======================bootstrap====================================================
 @import "font";
 @import "animate";
+html {
+    font-size: 9px
+}
+
+@media screen and (min-width:321px) and (max-width:375px) {
+    html {
+        font-size: 10px
+    }
+}
+
+@media screen and (min-width:376px) and (max-width:414px) {
+    html {
+        font-size: 12px
+    }
+}
+
+@media screen and (min-width:415px) and (max-width:539px) {
+    html {
+        font-size: 14px
+    }
+}
+
+@media screen and (min-width:540px) {
+    html {
+        font-size: 14px
+    }
+}
+
 a,
 button,
 input,
-textarea {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); //去掉IOS上点击按钮，链接等元素时出现的半透明区域
-    -webkit-user-modify: read-write-plaintext-only; //去掉Android上点击按钮，链接等元素时出现的半透明区域
-}
+textarea {}
 
 img {
     -webkit-touch-callout: none;
@@ -27,6 +53,24 @@ html.full-screen {
     body,
     .stage {
         height: 100%;
+    }
+}
+
+.fade {
+    @include opacity(0);
+    transition: opacity 0.3s linear;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000;
+    &.in {
+        @include opacity(0.5);
     }
 }
 
@@ -41,10 +85,20 @@ html.full-screen {
     overflow: hidden;
     //场景
     .scenes {
-        position: relative;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        &.active {
+            display: block;
+        }
         //标题页面场景
         &.scenes-title {
-            height: 100%;
+            z-index: 100;
             .game-name {
                 display: block;
                 margin: 0 auto;
@@ -86,7 +140,7 @@ html.full-screen {
                 background: url(../images/p03@2x.png) no-repeat center center;
                 z-index: 9;
             }
-            .heartbeat{
+            .heartbeat {
                 position: absolute;
                 bottom: 60px;
                 left: 50%;
@@ -97,66 +151,275 @@ html.full-screen {
                 background: url(../images/p04.png) no-repeat center center;
                 background-size: 360px 70px;
                 .mask {
-                  position: absolute;
-                  left: 0;
-                  top: 0;
-                  width: 100%;
-                  height: 100%;
-                  background-color: #fff;
-                  transform-origin: 100% 50%;
-                  animation: heartbeat 5s linear infinite;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: #fff;
+                    transform-origin: 100% 50%;
+                    animation: heartbeat 5s linear infinite;
                 }
             }
             .btn-start {
-              position: absolute;
-              bottom: 68px;
-              left: 50%;
-              margin-left: -50px;
-              z-index: 30;
+                position: absolute;
+                bottom: 68px;
+                left: 50%;
+                margin-left: -50px;
+                z-index: 30;
             }
             .logo-wrap {
-              position: absolute;
-              bottom: 5px;
-              left: 0px;
-              width: 100%;
-              text-align: center;
-              z-index: 30;
+                position: absolute;
+                bottom: 5px;
+                left: 0px;
+                width: 100%;
+                text-align: center;
+                z-index: 30;
             }
             .coin {
-              position: absolute;
-              z-index: 40;
-              animation: zoomInDown 3s ;
-              &.coin-1 {
-                bottom: 12%;
-                left: 10%;
-                animation-duration: 3s;
-              }
-              &.coin-2 {
-                bottom: 20%;
-                left: 30%;
-                animation-duration: 2s;
-              }
-              &.coin-3 {
-                bottom: 10%;
-                right: 40px;
-                animation-duration: 4s;
-              }
-              &.coin-4 {
-                bottom: 30%;
-                left: 20%;
-                animation-duration: 4s;
-              }
+                position: absolute;
+                z-index: 40;
+                animation: zoomInDown 3s;
+                &.coin-1 {
+                    bottom: 12%;
+                    left: 10%;
+                    animation-duration: 3s;
+                }
+                &.coin-2 {
+                    bottom: 20%;
+                    left: 30%;
+                    animation-duration: 2s;
+                }
+                &.coin-3 {
+                    bottom: 10%;
+                    right: 40px;
+                    animation-duration: 4s;
+                }
+                &.coin-4 {
+                    bottom: 30%;
+                    left: 20%;
+                    animation-duration: 4s;
+                }
             }
             .man {
-              width: 80%;
-              display: block;
-              margin: 0 auto;
-              position: absolute;
-              bottom: 150px;
-              left: 50%;
-              margin-left: -40%;
-              z-index: 35;
-              animation: swing-small 2s linear infinite;
+                width: 80%;
+                display: block;
+                margin: 0 auto;
+                position: absolute;
+                bottom: 150px;
+                left: 50%;
+                margin-left: -40%;
+                z-index: 35;
+                animation: swing-small 2s linear infinite;
+            }
+        }
+        &.scenes-start {
+            .rule-container {
+                position: absolute;
+                z-index: 1050;
+                width: 70%;
+                left: 50%;
+                top: 50%;
+                margin-top: -125px;
+                margin-left: -35%;
+                background: url(../images/p10.png) no-repeat center center;
+                background-size: 100% 100%;
+                text-align: center;
+                padding-top: 40px;
+                padding-bottom: 40px;
+                p {
+                    color: #333;
+                    margin: 10px 0;
+                    font-size: 1.8rem;
+                }
+                .btn {
+                    @include button-variant(#fff, #d25949, #d25949);
+                    text-decoration: none;
+                    user-select: none;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    margin-top: 10px;
+                    border-left: 1px solid #b34435;
+                    border-right: 1px solid #b34435;
+                    border-bottom: 3px solid #9d3527;
+                }
+            }
+            .whiteboard {
+              margin-top: 15%;
+              height: 30%;
+              .head {
+                border-top: 15px solid #3b576d;
+                height: 0;
+                border-radius: 15px 15px 0 0;
+                margin-top: -14px;
+                .spire {
+                  display: block;
+                  width: 16px;
+                  height: 16px;
+                  background-color: #3b576d;
+                  border-radius: 50%; 
+                  margin: 0 auto;
+                  margin-top: -25px;
+                }
+              }
+              .foot {
+                border-bottom: 15px solid #3b576d;
+                height: 0;
+                border-radius: 0 0 15px 15px ;
+                margin-bottom: -14px;
+              }
+              .leg {
+                background: url(../images/p17.png) no-repeat center top;
+                height: 100px;
+                background-size: auto 100px;
+              }
+              .body {
+                background-color: #fff;
+                height: 100%;
+                #svg {
+                }
+              }
+            }
+            .earth {
+                position: absolute;
+                bottom: -750px;
+                left: 50%;
+                margin-left: -500px;
+                width: 1000px;
+                height: 1000px;
+                border-radius: 1000px;
+                border: 8px solid #ffdc7b;
+                background: #ffffff;
+                padding: 12px;
+                z-index: 10;
+                &:after {
+                    content: '';
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                    border: 5px dashed #c9c9c9;
+                }
+            }
+            .money {
+                position: absolute;
+                animation-name: sway;
+                animation-iteration-count: infinite;
+                animation-duration: 8s;
+                animation-fill-mode: both;
+                animation-timing-function: ease-in-out;
+                z-index: 20;
+                &.money-1 {
+                    left: 20%;
+                    bottom: 140px;
+                    animation-delay: 1s;
+                    animation-duration: 6s;
+                }
+                &.money-2 {
+                    left: 15%;
+                    bottom: 130px;
+                    animation-delay: 1.8s;
+                    animation-duration: 5s;
+                }
+                &.money-3 {
+                    right: 15%;
+                    bottom: 120px;
+                    animation-delay: 0.6s;
+                    animation-duration: 5s;
+                }
+                &.money-4 {
+                    right: 25%;
+                    bottom: 130px;
+                    animation-delay: 1.3s;
+                    animation-duration: 6s;
+                }
+            }
+            .click-container {
+                position: absolute;
+                left: 50%;
+                margin-left: -35px;
+                width: 70px;
+                height: 70px;
+                bottom: 80px;
+                z-index: 30;
+                background-size: 100% 100%;
+                .pig {
+                    position: relative;
+                    display: block;
+                    margin: 0 auto;
+                    width: 70px;
+                    z-index: 31;
+                    transform: scale(1, 1);
+                    transition: transform 1s;
+                }
+                .circle {
+                    z-index: 30;
+                    width: 100%;
+                    height: 100%;
+                    transform: scale(1, 1);
+                    // animation-name: scale;
+                    animation-iteration-count: infinite;
+                    animation-duration: 1s;
+                    animation-fill-mode: both;
+                    // transition: transform 1s;
+                    border: 2px solid #f4c044;
+                    border-radius: 50%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    &.circle-1 {
+                        animation-delay: 0s;
+                    }
+                    &.circle-2 {
+                        animation-delay: .3s;
+                    }
+                    &.circle-3 {
+                        animation-delay: .6s;
+                    }
+                }
+            }
+            .clickme {
+                position: absolute;
+                z-index: 40;
+                color: #ce5343;
+                font-size: 1.4rem;
+                animation: tada 1s infinite;
+                opacity: 1;
+                transition: opacity 1s;
+                &.clickme-1 {
+                    left: 30%;
+                    bottom: 120px;
+                }
+                &.clickme-2 {
+                    right: 30%;
+                    bottom: 150px;
+                }
+            }
+            .coin {
+                position: absolute;
+                z-index: 40;
+                opacity: .55;
+                &.coin-1 {
+                    bottom: 12%;
+                    left: 10%;
+                    animation-duration: 3s;
+                }
+                &.coin-2 {
+                    bottom: 170px;
+                    left: 50%;
+                    margin-left: -6px;
+                    animation-duration: 2s;
+                }
+                &.coin-3 {
+                    bottom: 10%;
+                    right: 40px;
+                    animation-duration: 4s;
+                }
+                &.coin-4 {
+                    bottom: 30%;
+                    left: 20%;
+                    animation-duration: 4s;
+                }
             }
         }
     }
