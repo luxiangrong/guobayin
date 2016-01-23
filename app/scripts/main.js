@@ -45,6 +45,27 @@ jQuery(function($) {
         $('.rule-container').hide();
     };
 
+    $('.share-guild').on('click', function(){
+        hideShareGuild();
+    });
+
+    var showShareGuild = function() {
+        showModal();
+        $('.share-guild').show();
+    };
+    var hideShareGuild = function() {
+        hideModal();
+        $('.share-guild').hide();
+    };
+    //分享
+    $('.share, .send').on('click', function(e) {
+        e.preventDefault();
+        showShareGuild();
+    });
+    $(document).on('click', '.modal-share', function() {
+        hideShareGuild();
+    });
+
     $('#btn-start-game').on('click', function(e) {
         e.preventDefault();
         $('.scenes').removeClass('active');
@@ -66,6 +87,10 @@ jQuery(function($) {
         startGame();
     });
 
+    $('.collapse .toggle').click(function() {
+        $(this).closest('.collapse').toggleClass('in');
+    });
+
     $('.pig').on('touchstart click', function(e) {
         e.preventDefault();
         clickTimes++;
@@ -78,7 +103,32 @@ jQuery(function($) {
             $('.circle').css('animation-name', '');
         });
         gameStarted = true;
+        // $('.cd-progress .cd-progress-bar').css('animation-name', 'cd-progress');
+        // $('.cd-progress .cd-progress-bar').css('animation-duration', totalSecond + 's');
     });
+
+    $('.btn-again').on('click', function(e) {
+        e.preventDefault();
+        gameStarted = false;
+        gameStoped = false;
+        startTime = undefined;
+        lastCalcTime = undefined;
+        lastScore = undefined;
+        score = 500;
+        clickTimes = 0;
+        intervalTimes = 0;
+
+        $('.cd-progress .cd-progress-bar').css('transform', 'scale(1, 1)');
+        $('.time').text(totalSecond + '.00');
+
+        $('.result').hide();
+        $('.game-playing').show();
+        $('svg > path').remove();
+        $('.copyright').hide();
+        startGame();
+    });
+
+
 
     // t: current time, b: begInnIng value, c: change In value, d: duration
     var easeOutQuad = function(x, t, b, c, d) {
@@ -86,48 +136,88 @@ jQuery(function($) {
     };
 
     var gameStarted = false,
+        gameStoped = false,
         intervalTimes = 0,
         clickTimes = 0;
+    var totalSecond = 30; //游戏时间，单位为秒
+    var startTime = undefined;
+    var lastCalcTime = undefined;
+    var lastScore = undefined;
+    var score = 500;
+
     var startGame = function() {
-        var score = 500, //当前分数
+        var
             initScore = 500,
             maxScore = 8000, //最高分
             minScore = 0, //最低分
-            totalSecond = 20, //游戏时间，单位为秒
-            intervalTime = 1000, //更新指数的时间间隔，单位为毫秒 
-            startDecreaseSpeed = 30, //游戏开始时下降速度
-            endDecreaseSpeed = 50; //游戏结束时下降速度
+            intervalTime = 500, //更新指数的时间间隔，单位为毫秒 
+
+            increaseStepRange = [1, 200],
+            startDecreaseSpeed = 50, //游戏开始时下降速度
+            endDecreaseSpeed = 100, //游戏结束时下降速度
+            decreaseSpeedRange = [100, 500];
 
 
-        var startTime = undefined;
-        var lastCalcTime = undefined;
-        var lastScore = undefined;
+
         var w = $('.whiteboard .body').width();
         var h = $('.whiteboard .body').height();
 
-        var totalH = h * maxScore / 1000;
+        var scorePerH = 3000; // 当前显示板最多能包含多少分数
+        var pixelPerScore = h / scorePerH;
+
+        // var totalH = h * maxScore / 3000;
+        var totalH = h * maxScore / scorePerH;
         var totalW = w * totalSecond / 10;
 
-        var svg = new Snap(totalW, totalH);
-        $('.whiteboard .body').append(svg.node);
+        var padding = {
+            top: 20,
+            right: 20,
+            bottom: 20,
+            left: 20
+        };
+        var svg = new Snap('#svg').attr({
+            width: totalW + padding.left + padding.right,
+            height: totalH + padding.top + padding.bottom
+        });
+        // var svg = new Snap(, totalH + padding.top + padding.bottom)
+        // $('.whiteboard .body').append(svg.node);
 
         //折现的开始点marker
         var markerStart = svg.paper.circle(2, 2, 2).attr({
-            fill: "#ce5343"
-        }).marker(0, 0, 4, 4, 2, 2);
+            fill: "#d87a6e"
+        }).marker(0, 0, 4, 4, 2, 2).attr({
+            'orient': 'auto'
+        });
         //折现的结束点marker
-        var markerEnd = svg.paper.path("M0,0 L0,4 L4,2 L0,0").attr({
+        var markerEnd = svg.paper.circle(2, 2, 2).attr({
             fill: "#ce5343"
-        }).marker(0, 0, 4, 4, 0, 2);
+        }).marker(0, 0, 4, 4, 2, 2).attr({
+            'orient': 'auto'
+        });
+        // var markerEnd = svg.paper.path("M0,0 L0,4 L4,2 L0,0").attr({
+        //     fill: "#ce5343"
+        // }).marker(0, 0, 4, 4, 0, 2);
         var partW = w / (totalSecond * 1000 / intervalTime);
 
         //根据当前分数和时间计算点的位置
         function getPos(score, times) {
+            if (score < 0) {
+                score = 0;
+            }
+            if (score > maxScore) {
+                score = maxScore;
+            }
             return {
-                x: 10 + totalW / (totalSecond * 1000 /intervalTime) * times,
-                y: totalH - totalH * score / maxScore
+                x: padding.left + (totalW - padding.left - padding.right) * times / (totalSecond * 1000 / intervalTime),
+                // y: totalH - padding.top - padding.bottom - score / maxScore * (totalH - padding.top - padding.bottom)
+                y: totalH - pixelPerScore * score + padding.top
             }
         }
+
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
         /**
          * score 当前分数
          * times 经过的次数
@@ -137,9 +227,8 @@ jQuery(function($) {
          */
         function calcPath(increaseScore, times, lastScore, decreaseScore, clickedTimes) {
             //上一次计算分数时的点
-            if(times == 0) {
+            if (times == 0) {
                 var pos1 = getPos(lastScore, 0);
-                pos1.x = 10;
             } else {
                 var pos1 = getPos(lastScore, times - 1);
             }
@@ -150,6 +239,7 @@ jQuery(function($) {
                 var pos2 = getPos(lastScore - decreaseScore, times - 0.5);
             }
             var pos3 = getPos(lastScore + increaseScore - decreaseScore, times);
+
             transformSvg2(pos1);
             return {
                 start1: 'M' + pos1.x + ',' + pos1.y + 'L' + pos1.x + ',' + pos1.y,
@@ -160,131 +250,154 @@ jQuery(function($) {
         }
 
         function transformSvg2(p) {
-            var x,y;
-            if(p.x < w / 2) {
-                x = 0;
-            } else if(p.x > totalW - w / 2) {
-                x = w - totalW;
-            } else {
-                x = w / 2 - p.x;
-            }
-
-            if(p.y > totalH - h / 2) {
-                y = h - totalH;
-            } else if(p.y < h / 2) {
-                y = 0;
-            } else {
-                y = h / 2 - p.y;
-            }
-
-            $('svg').css('transform', 'translate(' +  x + 'px, ' + y + 'px)');
-
-        }
-
-        function transformSvg(score, times) {
             var x, y;
-            if(score < initScore) {
-                y = totalH - h;
-            }
-            else if(score > maxScore - initScore) {
-                y = 0;
-            } else {
-                y =  totalH - score / maxScore * totalH - score / 1000 * h;
-            }
 
-            //整个游戏过程中，绘制的次数
-            var totalTimes = totalSecond * 1000 / intervalTime;
-            //一屏宽度下可以绘制的次数
-            var timesPerScreen = w / totalW * totalTimes;
+            x = w / 2 - p.x;
+            y = h / 2 - p.y;
 
-            if( times < timesPerScreen / 2) {
-                x = 0;
-            } else if(times > totalTimes - timesPerScreen / 2) {
-                x = totalW - w;
-            } else {
-                x = totalW / totalTimes * (times - 1 - timesPerScreen / 2);
-            }
+            $('svg').css('transform', 'translate(' + x + 'px, ' + y + 'px)');
 
-            $('svg').css('transform', 'translate(' + (-x) + 'px, ' + (- y) + 'px)');
+            return [x, y]
         }
+
+        var lastP1, lastP2;
 
         function renderPath(paths) {
+            if (lastP2) {
+                lastP2.attr({
+                    'markerEnd': null
+                });
+            }
             var p1 = svg.paper.path(paths.start1).attr({
                 stroke: "#ce5343",
                 strokeWidth: 2,
-                strokeLinecap: 'round'
-                // markerEnd: markerEnd,
-                // markerStart: markerStart
+                strokeLinecap: 'round',
+                markerEnd: markerEnd,
+                markerStart: markerStart
             });
             p1.animate({
                 d: paths.end1
-            }, intervalTime / 2);
+            }, intervalTime / 2, function() {
+
+            });
+
+            lastP1 = p1;
 
             window.setTimeout(function() {
+                p1.attr({
+                    'markerEnd': null
+                });
                 var p2 = svg.paper.path(paths.start2).attr({
                     stroke: "#ce5343",
                     strokeWidth: 2,
-                    strokeLinejoin: 'round'
-                    // markerEnd: markerEnd,
-                    // markerStart: markerStart
+                    strokeLinejoin: 'round',
+                    'marker-end': markerEnd
                 });
                 p2.animate({
                     d: paths.end2
                 }, intervalTime / 2);
+                lastP2 = p2;
             }, intervalTime / 2);
         }
 
-        var startPaths = calcPath(0, 0, initScore, 0, 0);
+        renderPath(calcPath(0, 1, initScore, 0, 0));
 
-        renderPath(startPaths);
+        var $score = $('#score');
+        $score.text(initScore);
 
-
+        var decreaseScore = 0,
+            increaseStep = 0;
 
         function render(time) {
-            if (!gameStarted) {
-                return;
-            }
-            if (time === undefined)
-                time = Date.now();
-            if (startTime === undefined)
-                startTime = time;
-            if (lastCalcTime === undefined) {
-                lastCalcTime = time;
-            }
-
-            if (time - lastCalcTime >= intervalTime) {
-                intervalTimes++;
-                var decreaseSpeed = easeOutQuad(null, time - startTime, startDecreaseSpeed, (endDecreaseSpeed - startDecreaseSpeed), totalSecond * 1000);
-
-                console.log('点击了' + clickTimes + '次');
-                console.log('应该下降' + decreaseSpeed + '点');
-
-                lastCalcTime = time;
-
-                if (lastScore == undefined) {
-                    lastScore = score;
+            if (gameStarted && !gameStoped) {
+                if (time === undefined)
+                    time = Date.now();
+                if (startTime === undefined)
+                    startTime = time;
+                if (lastCalcTime === undefined) {
+                    lastCalcTime = time;
                 }
 
+                if (time - startTime >= totalSecond * 1000) {
+                    gameStoped = true;
+                    var sx = w / (totalW + padding.left + padding.right);
+                    var sy = h / (totalH + padding.top + padding.bottom);
+                    var x = -w - padding.left;
+                    var y = -h;
+                    $('svg').css('transform', 'translate3d(' + x + 'px,' + y + 'px,0) scale(' + sx + ', ' + sy + ')');
 
-                var decreaseScore = easeOutQuad(null, time - startTime, startDecreaseSpeed, (endDecreaseSpeed - startDecreaseSpeed), totalSecond * 1000);
+                    $('.copyright').fadeIn('normal');
 
-                var paths = calcPath(clickTimes * 15, intervalTimes, lastScore, decreaseScore, clickTimes);
-                score = score + clickTimes * 15 - decreaseScore;
+                    $('.game-playing').fadeOut();
+                    $('.result').removeClass('good normal bad fail');
+                    if (score >= 5000) {
+                        $('.result').addClass('good').fadeIn('slow');
+                    }
+                    if (score >= 3000 && score < 5000) {
+                        $('.result').addClass('normal').fadeIn('slow');
+                    }
+                    if (score >= 1000 && score < 3000) {
+                        $('.result').addClass('bad').fadeIn('slow');
+                    }
+                    if (score < 1000) {
+                        $('.result').addClass('fail').fadeIn('slow');
+                    }
 
-                
+                    return;
+                }
 
-                renderPath(paths);
+                var remain = (totalSecond - (time - startTime) / 1000).toFixed(2);
+                if (remain > 0 && remain < 10) {
+                    remain = '0' + remain;
+                }
+                if (remain <= 0) {
+                    remain = '00.00';
+                }
 
-                clickTimes = 0;
-                lastScore = score;
+                $('.cd-progress .cd-progress-bar').css('transform', 'scale(' + remain / totalSecond + ', 1)');
 
+                $('.time').text(remain);
 
-                // var line = svg.paper.line(partW * (intervalTimes - 1), 1 / 2 * h, partW * (intervalTimes - 1), 1 / 2 * h).attr({
-                //     stroke: "#ce5343",
-                //     strokeWidth: 3
-                // }).animate({
-                //     x2: partW * intervalTimes
-                // }, 500);
+                if (time - lastCalcTime >= intervalTime) {
+                    intervalTimes++;
+                    var decreaseSpeed = easeOutQuad(null, time - startTime, startDecreaseSpeed, (endDecreaseSpeed - startDecreaseSpeed), totalSecond * 1000);
+
+                    lastCalcTime = time;
+
+                    if (lastScore == undefined) {
+                        lastScore = score;
+                    }
+
+                    // var decreaseScore = easeOutQuad(null, time - startTime, startDecreaseSpeed, (endDecreaseSpeed - startDecreaseSpeed), totalSecond * 1000);
+                    decreaseScore = getRandomArbitrary(decreaseSpeedRange[0], decreaseSpeedRange[1]);
+                    increaseStep = getRandomArbitrary(increaseStepRange[0], increaseStepRange[1]);
+
+                    if (lastScore == 0) {
+                        var paths = calcPath(clickTimes * increaseStep, intervalTimes + 1, lastScore, 0, clickTimes);
+                        score = score + clickTimes * increaseStep;
+                    } else if (lastScore >= maxScore) {
+                        var paths = calcPath(0, intervalTimes + 1, lastScore, decreaseScore, clickTimes);
+                        score = score - decreaseScore;
+                    } else {
+                        var paths = calcPath(clickTimes * increaseStep, intervalTimes + 1, lastScore, decreaseScore, clickTimes);
+                        score = score + clickTimes * increaseStep - decreaseScore;
+                    }
+
+                    if (score <= 0) {
+                        score = 0;
+                    } else if (score >= maxScore) {
+                        score = maxScore;
+                    }
+
+                    renderPath(paths);
+
+                    clickTimes = 0;
+                    lastScore = score;
+
+                    $score.text(score.toFixed(2));
+
+                    // $score.text(Math.floor(easeOutQuad(null, time - lastCalcTime, lastScore == undefined ? initScore : lastScore, clickTimes * increaseStep - decreaseScore, intervalTime)));
+                }
             }
         }
 
