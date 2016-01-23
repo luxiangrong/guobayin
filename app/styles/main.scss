@@ -276,7 +276,9 @@ html.full-screen {
               .body {
                 background-color: #fff;
                 height: 100%;
-                #svg {
+                overflow: hidden;
+                svg {
+                    transition: transform 0.5s linear;
                 }
               }
             }
