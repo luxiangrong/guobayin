@@ -1,0 +1,70 @@
+@mixin make-progress-inner() {
+    @for $i from (0) through 100 {
+        .pace-progress[data-progress-text="#{$i}%"] {
+            .pace-progress-inner {
+                transform: rotateZ(#{3.6 * $i}deg) ;
+                transform-origin: 44.5px 32.5px;
+            }
+        }
+    }
+}
+
+@keyframes pace-theme-corner-indicator-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+
+.pace {
+    pointer-events: none;
+    user-select: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #c7ab70;
+    z-index: 9999;
+    &.pace-inactive {
+        display: none;
+    }
+    .pace-progress {
+        -webkit-transform: translate3d(0, 0, 0) !important;
+        -ms-transform: translate3d(0, 0, 0) !important;
+        transform: translate3d(0, 0, 0) !important;
+        width: 74px;
+        height: 74px;
+        line-height: 74px;
+        border-radius: 50%;
+        background: #bd9f62;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        margin-top: -37px;
+        left: 50%;
+        margin-left: -37px;
+        &:after {
+            display: block;
+            content: attr(data-progress-text);
+            font-family: "Helvetica Neue", sans-serif;
+            font-weight: 100;
+            font-size: 18px;
+            color: #fff;
+        }
+        .pace-progress-inner {
+            display: block;
+            width: 27px;
+            height: 19px;
+            background: url(../images/loading.png) no-repeat center center;
+            background-size: cover;
+            position: absolute;
+            left: -7px;
+            top: 5px;
+            transition: transform 0.1s;
+            transform-origin: 44.5px 32.5px;
+            animation: pace-theme-corner-indicator-spin 1s linear infinite;
+        }
+    }
+    // @include make-progress-inner();
+}

@@ -645,3 +645,9 @@ html.full-screen {
     text-align: center;
     display: none;
 }
+
+.pace {
+    &.pace-pack {
+        z-index: 999;
+    }
+}
