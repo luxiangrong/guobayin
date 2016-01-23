@@ -103,11 +103,32 @@ jQuery(function($) {
         var h = $('.whiteboard .body').height();
         var svg = new Snap(w, h);
         $('.whiteboard .body').append(svg.node);
-        var partW = w / (totalSecond * 1000 / intervalTime);
-        var t1 = svg.paper.line(0, 2 / 3 * h, partW * intervalTimes, 2 / 3 * h).attr({
-            stroke: "#ce5343",
-            strokeWidth: 3
+        var c1 = svg.paper.circle(5, 5, 3);
+        var p1 = svg.paper.path("M2,2 L2,11 L10,6 L2,2").attr({
+            fill: "#000"
         });
+        var m1 = c1.marker(0, 0, 8, 8, 5, 5),
+            m2 = p1.marker(0, 0, 13, 13, 2, 6);
+        var partW = w / (totalSecond * 1000 / intervalTime);
+        // var t1 = svg.paper.line(0, 2 / 3 * h, partW * intervalTimes, 2 / 3 * h).attr({
+        //     stroke: "#ce5343",
+        //     strokeWidth: 3
+        // });
+
+        var pathStr = 'M' + 0 + ',' + 2 / 3 * h + 'L' + +0 + ',' + 2 / 3 * h;
+        var p = svg.paper.path(pathStr).attr({
+            stroke: "#000",
+            strokeWidth: 5,
+            markerEnd: m2,
+            markerStart: m1
+        });
+        pathStr = 'M' + 0 + ',' + 2 / 3 * h + 'L' + partW * 20 + ',' + 2 / 3 * h;
+        p.animate({
+            d: pathStr
+        }, 1000);
+
+        
+        
 
         function render(time) {
             if (!gameStarted) {
@@ -122,16 +143,18 @@ jQuery(function($) {
             }
 
             if (time - lastCalcTime >= intervalTime) {
-                intervalTimes ++;
+                intervalTimes++;
                 var decreaseSpeed = easeOutQuad(null, time - startTime, startDecreaseSpeed, (endDecreaseSpeed - startDecreaseSpeed), totalSecond * 1000);
                 console.log('点击了' + clickTimes + '次');
                 console.log('应该下降' + decreaseSpeed + '点');
                 clickTimes = 0;
                 lastCalcTime = time;
-                var line = svg.paper.line(partW * (intervalTimes - 1), 2 / 3 * h, partW * (intervalTimes - 1), 2 / 3 * h).attr({
-                    stroke: "#ce5343",
-                    strokeWidth: 3
-                }).animate({x2: partW * intervalTimes}, 500);
+                // var line = svg.paper.line(partW * (intervalTimes - 1), 2 / 3 * h, partW * (intervalTimes - 1), 2 / 3 * h).attr({
+                //     stroke: "#ce5343",
+                //     strokeWidth: 3
+                // }).animate({
+                //     x2: partW * intervalTimes
+                // }, 500);
             }
         }
 
