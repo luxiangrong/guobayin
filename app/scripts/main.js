@@ -27,6 +27,37 @@ var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAni
 Pace.on('done', function() {
     jQuery(function($) {
         $('.pace-pack').remove();
+
+        var titleBgSound = new buzz.sound([
+            "images/m01.mp3",
+        ], {
+            webAudioApi: true,
+            preload: true,
+        });
+
+        var startBgSound = new buzz.sound([
+            "images/m02.mp3",
+        ], {
+            webAudioApi: true,
+            preload: true,
+        });
+
+        var resultGoodSound = new buzz.sound([
+            "images/m03.mp3",
+        ], {
+            webAudioApi: true,
+            preload: true,
+        });
+
+        var resultBadSound = new buzz.sound([
+            "images/m04.mp3",
+        ], {
+            webAudioApi: true,
+            preload: true,
+        });
+
+        titleBgSound.play();
+
         var showModal = function() {
             var modalBackdrop = $('<div class="modal-backdrop fade"></div>');
             modalBackdrop.appendTo('body');
@@ -86,6 +117,8 @@ Pace.on('done', function() {
             hideModal();
             $('.rule-container').hide();
             startGame();
+            titleBgSound.stop();
+            startBgSound.play();
         });
 
         $('.collapse .toggle').click(function() {
@@ -119,6 +152,8 @@ Pace.on('done', function() {
             clickTimes = 0;
             intervalTimes = 0;
 
+            $('.btn-again').hide();
+
             $('.cd-progress .cd-progress-bar').css('transform', 'scale(1, 1)');
             $('.time').text(totalSecond + '.00');
 
@@ -127,6 +162,8 @@ Pace.on('done', function() {
             $('svg > path').remove();
             $('.copyright').hide();
             startGame();
+
+            startBgSound.fadeIn(1000);
         });
 
 
@@ -329,21 +366,37 @@ Pace.on('done', function() {
 
                         $('.copyright').fadeIn('normal');
 
-                        $('.game-playing').fadeOut();
+                        $('.game-playing').hide();
+
+                        $('.pig').css('transform', 'scale(1, 1)');
+                        $('.clickme').css('opacity', 1);
+                        $('.circle').css('animation-name', '');
+
                         $('.result').removeClass('good normal bad fail');
                         if (score >= 5000) {
                             $('.result').addClass('good').fadeIn('slow');
+                            resultGoodSound.play();
                         }
                         if (score >= 3000 && score < 5000) {
                             $('.result').addClass('normal').fadeIn('slow');
+                            resultGoodSound.play();
                         }
                         if (score >= 1000 && score < 3000) {
                             $('.result').addClass('bad').fadeIn('slow');
+                            resultGoodSound.play();
                         }
                         if (score < 1000) {
                             $('.result').addClass('fail').fadeIn('slow');
+                            resultBadSound.play();
                         }
 
+                        window.setTimeout(function() {
+                            $('.btn-again').fadeIn(3000);
+                        }, 3000);
+
+                        startBgSound.fadeOut(500, function() {
+                            this.stop();
+                        });
                         return;
                     }
 
